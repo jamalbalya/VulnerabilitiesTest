@@ -1,0 +1,22 @@
+import nmap
+
+scanner = nmap.PortScanner()
+
+# Scan a target for vulnerabilities
+scanner.scan('192.168.1.1', arguments='--script vuln')
+
+# Print results
+for host in scanner.all_hosts():
+    print('Host : %s (%s)' % (host, scanner[host].hostname()))
+    print('State : %s' % scanner[host].state())
+    for proto in scanner[host].all_protocols():
+        print('Protocol : %s' % proto)
+ 
+        lport = scanner[host][proto].keys()
+        lport.sort()
+        for port in lport:
+            print('Port : %s\tState : %s' % (port, scanner[host][proto][port]['state']))
+            if scanner[host][proto][port]['state'] == 'open':
+                print('Vulnerabilities :')
+                for vulnerability in scanner[host][proto][port]['script']:
+                    print('\t%s : %s' % (vulnerability, scanner[host][proto][port]['script'][vulnerability]))
